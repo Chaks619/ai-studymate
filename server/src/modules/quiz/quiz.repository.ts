@@ -45,6 +45,14 @@ export class QuizRepository {
       document: documentId,
     });
   }
+
+  async deleteManyByDocuments(
+    documentIds: string[]
+  ): Promise<void> {
+    await QuizModel.deleteMany({
+      document: { $in: documentIds },
+    });
+  }
 }
 
 export const quizRepository =

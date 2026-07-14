@@ -45,6 +45,14 @@ export class SummaryRepository {
       document: documentId,
     });
   }
+
+  async deleteManyByDocuments(
+    documentIds: string[]
+  ): Promise<void> {
+    await SummaryModel.deleteMany({
+      document: { $in: documentIds },
+    });
+  }
 }
 
 export const summaryRepository =

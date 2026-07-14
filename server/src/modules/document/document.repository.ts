@@ -73,6 +73,22 @@ export class DocumentRepository {
       isArchived: false,
     }).lean();
   }
+
+  /**
+   * Includes archived documents — account deletion has to clean up every
+   * row and every uploaded file, not just the ones still visible.
+   */
+  async findAllByOwner(ownerId: string): Promise<DocumentDocument[]> {
+    return await DocumentModel.find({
+      owner: ownerId,
+    });
+  }
+
+  async deleteManyByOwner(ownerId: string): Promise<void> {
+    await DocumentModel.deleteMany({
+      owner: ownerId,
+    });
+  }
 }
 
 export const documentRepository = new DocumentRepository();

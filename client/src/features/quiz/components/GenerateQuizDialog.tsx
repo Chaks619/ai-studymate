@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ListChecks, RefreshCw, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { usePreferences } from "@/features/settings/hooks/usePreferences";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
@@ -38,10 +39,27 @@ export function GenerateQuizDialog({
   triggerLabel = "Generate quiz",
   triggerVariant = "default",
 }: Props) {
-  const [questionCount, setQuestionCount] = useState(10);
-  const [difficulty, setDifficulty] = useState<Difficulty>("mixed");
+  const { preferences } = usePreferences();
+
+  const [questionCount, setQuestionCount] = useState(
+    preferences.quizQuestionCount
+  );
+  const [difficulty, setDifficulty] = useState<Difficulty>(
+    preferences.quizDifficulty
+  );
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+
+  function handleOpenChange(next: boolean) {
+    // Re-seed from the saved defaults each time the dialog opens, so a
+    // one-off override here doesn't quietly become the new default.
+    if (next) {
+      setQuestionCount(preferences.quizQuestionCount);
+      setDifficulty(preferences.quizDifficulty);
+    }
+
+    setOpen(next);
+  }
 
   async function handleGenerate() {
     try {
@@ -60,7 +78,7 @@ export function GenerateQuizDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger
         render={
           <Button

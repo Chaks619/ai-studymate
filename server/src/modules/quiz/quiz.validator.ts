@@ -1,11 +1,21 @@
 import { z } from "zod";
 
+import {
+  QUIZ_QUESTION_COUNT_MAX,
+  QUIZ_QUESTION_COUNT_MIN,
+} from "../user/user.constants.js";
+
+/**
+ * Both fields are optional: when the request omits one, the service falls
+ * back to the user's saved quiz preferences.
+ */
 export const generateQuizSchema = z.object({
   questionCount: z
     .number()
     .int()
-    .min(5)
-    .max(50),
+    .min(QUIZ_QUESTION_COUNT_MIN)
+    .max(QUIZ_QUESTION_COUNT_MAX)
+    .optional(),
 
   difficulty: z
     .enum([
@@ -14,7 +24,7 @@ export const generateQuizSchema = z.object({
       "hard",
       "mixed",
     ])
-    .default("mixed"),
+    .optional(),
 });
 
 export type GenerateQuizDto =

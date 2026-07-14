@@ -31,7 +31,15 @@ export class QuizService {
       throw new Error('Document contains no extracted text');
     }
 
-    const prompt = buildQuizPrompt(document.extractedText, dto.questionCount, dto.difficulty);
+    const questionCount = dto.questionCount ?? user.preferences.quizQuestionCount;
+    const difficulty = dto.difficulty ?? user.preferences.quizDifficulty;
+
+    const prompt = buildQuizPrompt(
+      document.extractedText,
+      questionCount,
+      difficulty,
+      user.preferences
+    );
 
     const startedAt = Date.now();
 

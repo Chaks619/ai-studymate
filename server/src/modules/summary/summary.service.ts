@@ -53,7 +53,8 @@ export class SummaryService {
     // ============================================
 
     const prompt = buildSummaryPrompt(
-      document.extractedText
+      document.extractedText,
+      user.preferences
     );
 
     // ============================================

@@ -1,10 +1,17 @@
+import type { UserPreferences } from "../user/user.mapper.js";
+import { buildStudyDirectives } from "../ai/prompts/preferences.prompt.js";
+
 export function buildFlashcardPrompt(
-  text: string
+  text: string,
+  cardCount: number,
+  preferences: UserPreferences
 ) {
   return `
 You are an expert teacher.
 
-Generate 15 high-quality flashcards from the document.
+Generate exactly ${cardCount} high-quality flashcards from the document.
+
+${buildStudyDirectives(preferences)}
 
 Return ONLY valid JSON.
 
@@ -21,12 +28,12 @@ Format:
   ]
 }
 
-Difficulty must be a mix of:
-- easy
-- medium
-- hard
+Rules:
 
-Do not return markdown.
+- Generate exactly ${cardCount} cards.
+- Difficulty must be one of: easy, medium, hard.
+- Use a mix of difficulties.
+- Do not return markdown.
 
 Document:
 

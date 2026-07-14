@@ -7,6 +7,7 @@ import type {
 import type { DocumentParams } from "@/shared/types/express.types.js";
 
 import { flashcardService } from "./flashcard.service.js";
+import { generateFlashcardsSchema } from "./flashcard.validator.js";
 
 export class FlashcardController {
   private getDocumentId(
@@ -45,10 +46,15 @@ export class FlashcardController {
       const user =
         this.getAuthenticatedUser(req);
 
+      const dto = generateFlashcardsSchema.parse(
+        req.body ?? {}
+      );
+
       const flashcards =
         await flashcardService.generateDocumentFlashcards(
           user,
-          documentId
+          documentId,
+          dto
         );
 
       res.status(200).json({

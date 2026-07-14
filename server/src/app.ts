@@ -4,7 +4,9 @@ import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import compression from 'compression';
 import morgan from 'morgan';
+import { ZodError } from 'zod';
 import authRoutes from "./modules/auth/auth.routes.js";
+import userRoutes from "./modules/user/user.routes.js";
 import workspaceRoutes from "./modules/workspace/workspace.routes.js";
 import documentRoutes from "./modules/document/document.routes.js"
 import summaryRoutes from "./modules/summary/summary.routes.js";
@@ -50,6 +52,7 @@ app.get('/api/health', (req: Request, res: Response) => {
 
 
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/workspaces", workspaceRoutes);
 app.use("/api/documents", documentRoutes);
 app.use('/api/documents', summaryRoutes);
@@ -70,6 +73,21 @@ interface CustomError extends Error {
 
 app.use((err: CustomError, req: Request, res: Response, next: NextFunction) => {
   console.error('Error:', err);
+
+  // Validation failures are the caller's fault, not ours — without this they
+  // surface as a 500 and read like the server fell over.
+  if (err instanceof ZodError) {
+    res.status(400).json({
+      success: false,
+      message: err.issues[0]?.message ?? 'Invalid request',
+      errors: err.issues.map((issue) => ({
+        path: issue.path.join('.'),
+        message: issue.message,
+      })),
+    });
+
+    return;
+  }
 
   const status = err.status || 500;
   const message = err.message || 'Internal Server Error';

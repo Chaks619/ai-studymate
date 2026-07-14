@@ -5,6 +5,7 @@ import { ThemeProvider } from "next-themes";
 
 import { store } from "./store";
 import { AuthInitializer } from "@/features/auth/components/AuthInitializer";
+import { AppearanceProvider } from "@/components/theme/AppearanceProvider";
 import { Toaster } from "@/components/ui/sonner";
 
 export function AppProviders({
@@ -19,8 +20,10 @@ export function AppProviders({
         disableTransitionOnChange
       >
         <AuthInitializer>
+          <AppearanceProvider>
             {children}
             <Toaster richColors position="top-right" />
+          </AppearanceProvider>
         </AuthInitializer>
       </ThemeProvider>
     </Provider>

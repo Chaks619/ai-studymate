@@ -16,11 +16,13 @@ import { env } from "@/config/env.js";
 
 import type { FlashcardAIResponse } from "./flashcard.types.js";
 import { buildFlashcardPrompt } from "./flashcard.prompt.js";
+import type { GenerateFlashcardsDto } from "./flashcard.validator.js";
 
 export class FlashcardService {
   async generateDocumentFlashcards(
     user: SafeUser,
-    documentId: string
+    documentId: string,
+    dto: GenerateFlashcardsDto
   ) {
     // ============================================
     // Verify document ownership
@@ -52,8 +54,13 @@ export class FlashcardService {
     // Generate Flashcards
     // ============================================
 
+    const cardCount =
+      dto.cardCount ?? user.preferences.flashcardCount;
+
     const prompt = buildFlashcardPrompt(
-      document.extractedText
+      document.extractedText,
+      cardCount,
+      user.preferences
     );
 
     const startedAt = Date.now();

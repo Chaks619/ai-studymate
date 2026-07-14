@@ -44,6 +44,12 @@ export class WorkspaceRepository {
       }
     );
   }
+
+  async deleteManyByOwner(ownerId: string): Promise<void> {
+    await WorkspaceModel.deleteMany({
+      owner: ownerId,
+    });
+  }
 }
 
 export const workspaceRepository = new WorkspaceRepository();

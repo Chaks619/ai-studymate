@@ -1,7 +1,11 @@
+import type { UserPreferences } from "../user/user.mapper.js";
+import { buildStudyDirectives } from "../ai/prompts/preferences.prompt.js";
+
 export function buildQuizPrompt(
   text: string,
   questionCount: number,
-  difficulty: string
+  difficulty: string,
+  preferences: UserPreferences
 ) {
   return `
 You are an expert teacher.
@@ -9,6 +13,8 @@ You are an expert teacher.
 Generate exactly ${questionCount} multiple-choice questions.
 
 Difficulty: ${difficulty}.
+
+${buildStudyDirectives(preferences)}
 
 Return ONLY valid JSON.
 

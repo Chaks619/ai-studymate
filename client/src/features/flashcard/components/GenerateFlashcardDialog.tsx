@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Layers, RefreshCw, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { usePreferences } from "@/features/settings/hooks/usePreferences";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
@@ -26,9 +27,21 @@ export function GenerateFlashcardsDialog({
   triggerLabel = "Generate flashcards",
   triggerVariant = "default",
 }: Props) {
-  const [count, setCount] = useState(10);
+  const { preferences } = usePreferences();
+
+  const [count, setCount] = useState(preferences.flashcardCount);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+
+  function handleOpenChange(next: boolean) {
+    // Re-seed from the saved default each time the dialog opens, so a one-off
+    // override here doesn't quietly become the new default.
+    if (next) {
+      setCount(preferences.flashcardCount);
+    }
+
+    setOpen(next);
+  }
 
   async function handleGenerate() {
     try {
@@ -47,7 +60,7 @@ export function GenerateFlashcardsDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger
         render={
           <Button

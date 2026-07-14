@@ -9,6 +9,8 @@ export interface RegisterRequest {
   password: string;
 }
 
+import type { UserPreferences } from "./user.types";
+
 export interface User {
   id: string;
   name: string;
@@ -24,6 +26,8 @@ export interface User {
   subscription: string;
 
   isVerified: boolean;
+
+  preferences: UserPreferences;
 
   createdAt: string;
 

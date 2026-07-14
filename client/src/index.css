@@ -105,6 +105,145 @@
 }
 
 /* ------------------------------------------------------------------ *
+ * Accent colour
+ * `data-accent` is stamped on <html> from the user's preferences. Only
+ * the brand tokens move — success, warning and destructive keep their
+ * fixed semantic hues so "correct" and "danger" never drift with the
+ * user's colour choice.
+ *
+ * Specificity is deliberate: `:root[data-accent]` (0,2,0) outranks the
+ * `.dark` block (0,1,0), so each accent has to restate its dark values
+ * at `:root.dark[data-accent]` (0,3,0) to win them back.
+ * ------------------------------------------------------------------ */
+
+:root[data-accent="teal"] {
+  --primary: oklch(0.52 0.1 190);
+  --primary-foreground: oklch(0.99 0.005 190);
+  --ring: oklch(0.52 0.1 190);
+  --sidebar-primary: oklch(0.52 0.1 190);
+  --sidebar-primary-foreground: oklch(0.99 0.005 190);
+  --sidebar-ring: oklch(0.52 0.1 190);
+}
+
+:root.dark[data-accent="teal"] {
+  --primary: oklch(0.75 0.115 185);
+  --primary-foreground: oklch(0.2 0.03 195);
+  --ring: oklch(0.65 0.1 190);
+  --sidebar-primary: oklch(0.75 0.115 185);
+  --sidebar-primary-foreground: oklch(0.2 0.03 195);
+  --sidebar-ring: oklch(0.65 0.1 190);
+}
+
+:root[data-accent="blue"] {
+  --primary: oklch(0.54 0.14 255);
+  --primary-foreground: oklch(0.99 0.005 255);
+  --ring: oklch(0.54 0.14 255);
+  --sidebar-primary: oklch(0.54 0.14 255);
+  --sidebar-primary-foreground: oklch(0.99 0.005 255);
+  --sidebar-ring: oklch(0.54 0.14 255);
+}
+
+:root.dark[data-accent="blue"] {
+  --primary: oklch(0.72 0.13 252);
+  --primary-foreground: oklch(0.2 0.04 255);
+  --ring: oklch(0.64 0.12 255);
+  --sidebar-primary: oklch(0.72 0.13 252);
+  --sidebar-primary-foreground: oklch(0.2 0.04 255);
+  --sidebar-ring: oklch(0.64 0.12 255);
+}
+
+:root[data-accent="purple"] {
+  --primary: oklch(0.52 0.17 295);
+  --primary-foreground: oklch(0.99 0.005 295);
+  --ring: oklch(0.52 0.17 295);
+  --sidebar-primary: oklch(0.52 0.17 295);
+  --sidebar-primary-foreground: oklch(0.99 0.005 295);
+  --sidebar-ring: oklch(0.52 0.17 295);
+}
+
+:root.dark[data-accent="purple"] {
+  --primary: oklch(0.72 0.15 292);
+  --primary-foreground: oklch(0.2 0.05 295);
+  --ring: oklch(0.63 0.14 295);
+  --sidebar-primary: oklch(0.72 0.15 292);
+  --sidebar-primary-foreground: oklch(0.2 0.05 295);
+  --sidebar-ring: oklch(0.63 0.14 295);
+}
+
+:root[data-accent="green"] {
+  --primary: oklch(0.53 0.13 150);
+  --primary-foreground: oklch(0.99 0.005 150);
+  --ring: oklch(0.53 0.13 150);
+  --sidebar-primary: oklch(0.53 0.13 150);
+  --sidebar-primary-foreground: oklch(0.99 0.005 150);
+  --sidebar-ring: oklch(0.53 0.13 150);
+}
+
+:root.dark[data-accent="green"] {
+  --primary: oklch(0.75 0.14 152);
+  --primary-foreground: oklch(0.2 0.04 150);
+  --ring: oklch(0.66 0.13 150);
+  --sidebar-primary: oklch(0.75 0.14 152);
+  --sidebar-primary-foreground: oklch(0.2 0.04 150);
+  --sidebar-ring: oklch(0.66 0.13 150);
+}
+
+:root[data-accent="orange"] {
+  --primary: oklch(0.62 0.15 55);
+  --primary-foreground: oklch(0.99 0.005 55);
+  --ring: oklch(0.62 0.15 55);
+  --sidebar-primary: oklch(0.62 0.15 55);
+  --sidebar-primary-foreground: oklch(0.99 0.005 55);
+  --sidebar-ring: oklch(0.62 0.15 55);
+}
+
+:root.dark[data-accent="orange"] {
+  --primary: oklch(0.76 0.14 62);
+  --primary-foreground: oklch(0.21 0.04 55);
+  --ring: oklch(0.68 0.13 58);
+  --sidebar-primary: oklch(0.76 0.14 62);
+  --sidebar-primary-foreground: oklch(0.21 0.04 55);
+  --sidebar-ring: oklch(0.68 0.13 58);
+}
+
+:root[data-accent="red"] {
+  --primary: oklch(0.55 0.19 25);
+  --primary-foreground: oklch(0.99 0.005 25);
+  --ring: oklch(0.55 0.19 25);
+  --sidebar-primary: oklch(0.55 0.19 25);
+  --sidebar-primary-foreground: oklch(0.99 0.005 25);
+  --sidebar-ring: oklch(0.55 0.19 25);
+}
+
+:root.dark[data-accent="red"] {
+  --primary: oklch(0.71 0.17 27);
+  --primary-foreground: oklch(0.2 0.04 25);
+  --ring: oklch(0.63 0.16 25);
+  --sidebar-primary: oklch(0.71 0.17 27);
+  --sidebar-primary-foreground: oklch(0.2 0.04 25);
+  --sidebar-ring: oklch(0.63 0.16 25);
+}
+
+/* ------------------------------------------------------------------ *
+ * Font size
+ * Tailwind's type and spacing scales are both rem-based, so moving the
+ * root size rescales the interface as a whole rather than just the
+ * glyphs — which is what someone reaching for "Large" actually wants.
+ * ------------------------------------------------------------------ */
+
+:root[data-font-size="small"] {
+  font-size: 14px;
+}
+
+:root[data-font-size="default"] {
+  font-size: 16px;
+}
+
+:root[data-font-size="large"] {
+  font-size: 18px;
+}
+
+/* ------------------------------------------------------------------ *
  * Map tokens onto Tailwind's theme so utilities resolve.
  * ------------------------------------------------------------------ */
 

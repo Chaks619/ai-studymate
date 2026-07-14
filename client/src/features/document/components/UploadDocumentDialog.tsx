@@ -9,6 +9,7 @@ import {
 
 import { UploadDocumentForm } from "./UploadDocumentForm";
 
+import { useAutoGenerate } from "../hooks/useAutoGenerate";
 import { useUploadDocument } from "../hooks/useUploadDocument";
 
 interface Props {
@@ -27,19 +28,25 @@ export function UploadDocumentDialog({
     isLoading,
   } = useUploadDocument();
 
+  const autoGenerate = useAutoGenerate();
+
   async function handleUpload(
     formData: FormData
   ) {
     if (!workspaceId) return;
 
-    await uploadDocument({
+    const document = await uploadDocument({
       workspaceId,
       formData,
     }).unwrap();
 
     toast.success("Document uploaded successfully!");
-    
+
     onOpenChange(false);
+
+    // Not awaited: the dialog is already closed and each generation reports
+    // its own progress, so there's nothing left for the caller to wait on.
+    void autoGenerate(document);
   }
 
   return (

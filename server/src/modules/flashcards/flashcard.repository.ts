@@ -45,6 +45,14 @@ export class FlashcardRepository {
       document: documentId,
     });
   }
+
+  async deleteManyByDocuments(
+    documentIds: string[]
+  ): Promise<void> {
+    await FlashcardModel.deleteMany({
+      document: { $in: documentIds },
+    });
+  }
 }
 
 export const flashcardRepository =

@@ -32,6 +32,14 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
     },
 
+    /**
+     * Replaces the user without touching the session — settings updates
+     * return a fresh user object and shouldn't disturb the access token.
+     */
+    setUser(state, action: PayloadAction<User>) {
+      state.user = action.payload;
+    },
+
     logout(state) {
       state.user = null;
       state.accessToken = null;
@@ -46,6 +54,7 @@ const authSlice = createSlice({
 
 export const {
   setCredentials,
+  setUser,
   logout,
   initialize
 } = authSlice.actions;

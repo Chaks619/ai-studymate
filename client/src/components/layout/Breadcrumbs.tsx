@@ -11,6 +11,10 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Skeleton } from "@/components/ui/skeleton";
 
+import {
+  DEFAULT_SETTINGS_SECTION,
+  SETTINGS_SECTIONS,
+} from "@/features/settings/settings.constants";
 import { useGetDocumentQuery } from "@/services/api/document.api";
 import { useGetWorkspaceQuery } from "@/services/api/workspace.api";
 
@@ -49,6 +53,23 @@ export function Breadcrumbs() {
   const crumbs: Crumb[] = [
     { label: "Dashboard", href: "/" },
   ];
+
+  if (section === "settings") {
+    const settingsSection = SETTINGS_SECTIONS.find(
+      (item) => item.slug === id
+    );
+
+    crumbs.push({
+      label: "Settings",
+      href: settingsSection
+        ? `/settings/${DEFAULT_SETTINGS_SECTION}`
+        : undefined,
+    });
+
+    if (settingsSection) {
+      crumbs.push({ label: settingsSection.label });
+    }
+  }
 
   if (workspaceId) {
     crumbs.push({

@@ -13,6 +13,10 @@ export class UserRepository {
     return UserModel.findById(id).select('+hashedRefreshToken');
   }
 
+  async findByIdWithPassword(id: string): Promise<UserDocument | null> {
+    return UserModel.findById(id).select('+password');
+  }
+
   async findByEmail(email: string): Promise<UserDocument | null> {
     return await UserModel.findOne({
       email: email.toLowerCase(),

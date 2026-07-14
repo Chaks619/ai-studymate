@@ -1,7 +1,29 @@
-export const buildSummaryPrompt = (text: string) => `
+import { SUMMARY_LENGTH } from "@/modules/user/user.constants.js";
+import type { UserPreferences } from "@/modules/user/user.mapper.js";
+
+import {
+  buildStudyDirectives,
+  SUMMARY_LENGTH_DIRECTIVE,
+} from "./preferences.prompt.js";
+
+export const buildSummaryPrompt = (
+  text: string,
+  preferences: UserPreferences
+) => {
+  const lengthDirective =
+    SUMMARY_LENGTH_DIRECTIVE[preferences.summaryLength] ??
+    SUMMARY_LENGTH_DIRECTIVE[SUMMARY_LENGTH.MEDIUM];
+
+  return `
 You are an expert study assistant.
 
-Create a comprehensive study summary from the following study material.
+Create a study summary from the following study material.
+
+${buildStudyDirectives(preferences)}
+
+Length:
+
+- ${lengthDirective}
 
 Requirements:
 
@@ -18,3 +40,4 @@ Study Material:
 
 ${text}
 `;
+};
