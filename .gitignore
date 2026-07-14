@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Production
+dist/
+build/
+.vite/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Misc
+.DS_Store
+*.log
+.vscode/
+.idea/
+
+# Client specific
+client/dist/
+client/build/
+client/.vite/
+client/coverage/
+
+# Server specific
+server/dist/
+server/build/
+server/coverage/
+server/uploads/
+
+# Testing
+coverage/
+.nyc_output/
+
+# IDE
+*.swp
+*.swo
+*~
+.project
+.classpath
+*.c9/
+*.sublime-workspace
+
+# OS
+Thumbs.db

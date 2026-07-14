@@ -1,0 +1,90 @@
+/* Not Found Page Styles */
+.not-found-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 200px);
+  padding: 2rem;
+}
+
+.not-found-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  max-width: 900px;
+  align-items: center;
+}
+
+.not-found-content {
+  text-align: left;
+}
+
+.not-found-content .error-code {
+  font-size: 5rem;
+  font-weight: bold;
+  color: #667eea;
+  margin: 0;
+  line-height: 1;
+}
+
+.not-found-content h2 {
+  font-size: 2rem;
+  margin: 1rem 0;
+  color: #333;
+}
+
+.not-found-content p {
+  color: #666;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.not-found-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.not-found-actions a {
+  text-decoration: none;
+}
+
+.not-found-illustration {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #e0e0e0;
+}
+
+.not-found-illustration svg {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+}
+
+@media (max-width: 768px) {
+  .not-found-container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .not-found-content {
+    text-align: center;
+  }
+
+  .not-found-content .error-code {
+    font-size: 3rem;
+  }
+
+  .not-found-content h2 {
+    font-size: 1.5rem;
+  }
+
+  .not-found-actions {
+    justify-content: center;
+  }
+
+  .not-found-illustration {
+    margin-top: 1rem;
+  }
+}

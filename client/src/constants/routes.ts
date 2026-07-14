@@ -1,0 +1,16 @@
+export const ROUTES = {
+  HOME: '/',
+  LOGIN: '/login',
+  REGISTER: '/register',
+  FORGOT_PASSWORD: '/forgot-password',
+  DASHBOARD: '/dashboard',
+  CHAT: '/chat',
+  QUIZ: '/quiz',
+  FLASHCARDS: '/flashcards',
+  ROADMAP: '/roadmap',
+  PDF: '/pdf',
+  PRICING: '/pricing',
+  ABOUT: '/about',
+  CONTACT: '/contact',
+  NOT_FOUND: '/404',
+};

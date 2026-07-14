@@ -1,0 +1,26 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+build
+.vite
+
+# Environment — every .env variant is ignored except the committed template
+.env
+.env.*
+!.env.example
+
+# Testing
+coverage
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+*.swp
