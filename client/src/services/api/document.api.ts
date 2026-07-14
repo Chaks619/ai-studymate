@@ -8,6 +8,11 @@ import type {
 
 export const documentApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    getDocument: builder.query<Document, string>({
+      query: (id) => `/documents/${id}`,
+      transformResponse: (response: DocumentResponse) => response.data,
+      providesTags: (_result, _error, id) => [{ type: "Document", id },],
+    }),
 
     getWorkspaceDocuments: builder.query< Document[], string>({
       query: (workspaceId) =>`/workspaces/${workspaceId}/documents`,
@@ -31,6 +36,7 @@ export const documentApi = baseApi.injectEndpoints({
 });
 
 export const {
+  useGetDocumentQuery,
   useGetWorkspaceDocumentsQuery,
   useUploadDocumentMutation
 } = documentApi;

@@ -12,8 +12,8 @@ export function DocumentCard({
 }: DocumentCardProps) {
   const navigate = useNavigate();
 
-  const processing =
-    document.processing.status !== "READY";
+  const processing = document.processing.status !== "READY";
+  console.log("Document Data ->",document);
 
   return (
     <div

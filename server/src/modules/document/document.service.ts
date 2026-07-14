@@ -1,21 +1,35 @@
 import { Types } from 'mongoose';
-import { uploadPdfToCloudinary } from '../../shared/utils/cloudinary-upload.js';
-import { workspaceRepository } from '../workspace/workspace.repository.js';
-import type { SafeUser } from '../user/user.mapper.js';
-import { DOCUMENT_LANGUAGE, DOCUMENT_STATUS } from './document.constants.js';
-import { documentRepository } from './document.repository.js';
-import { documentProcessor } from './document.processor.js';
 import type { JwtPayload } from 'jsonwebtoken';
 
+import { uploadPdfToCloudinary } from '@/shared/utils/cloudinary-upload.js';
+
+import { workspaceRepository } from '../workspace/workspace.repository.js';
+import type { SafeUser } from '../user/user.mapper.js';
+
+import { DOCUMENT_LANGUAGE, DOCUMENT_STATUS } from './document.constants.js';
+import { documentProcessor } from './document.processor.js';
+import { documentRepository } from './document.repository.js';
+import { toDocumentResponse } from './document.mapper.js';
+
 export class DocumentService {
-  async uploadDocument(user: SafeUser, workspaceId: string, file: Express.Multer.File) {
-    const workspace = await workspaceRepository.findByIdAndOwner(workspaceId, user.id);
+  async uploadDocument(
+    user: SafeUser,
+    workspaceId: string,
+    file: Express.Multer.File
+  ) {
+    const workspace = await workspaceRepository.findByIdAndOwner(
+      workspaceId,
+      user.id
+    );
 
     if (!workspace) {
       throw new Error('Workspace not found');
     }
 
-    const uploadedFile = await uploadPdfToCloudinary(file.buffer, file.originalname);
+    const uploadedFile = await uploadPdfToCloudinary(
+      file.buffer,
+      file.originalname
+    );
 
     const document = await documentRepository.create({
       owner: new Types.ObjectId(user.id),
@@ -57,19 +71,25 @@ export class DocumentService {
         throw new Error('Document file URL is missing');
       }
 
-      const processedDocument = await documentProcessor.extractText(fileUrl);
+      const processedDocument =
+        await documentProcessor.extractText(fileUrl);
 
-      const updatedDocument = await documentRepository.updateById(document.id, {
-        extractedText: processedDocument.text,
+      const updatedDocument =
+        await documentRepository.updateById(document.id, {
+          extractedText: processedDocument.text,
 
-        processing: {
-          status: DOCUMENT_STATUS.READY,
-          pageCount: processedDocument.pageCount,
-          language: DOCUMENT_LANGUAGE.UNKNOWN,
-        },
-      });
+          processing: {
+            status: DOCUMENT_STATUS.READY,
+            pageCount: processedDocument.pageCount,
+            language: DOCUMENT_LANGUAGE.UNKNOWN,
+          },
+        });
 
-      return updatedDocument;
+      if (!updatedDocument) {
+        throw new Error('Document not found');
+      }
+
+      return toDocumentResponse(updatedDocument);
     } catch (error) {
       console.error(error);
 
@@ -85,22 +105,35 @@ export class DocumentService {
     }
   }
 
-  async getWorkspaceDocuments(user: JwtPayload, workspaceId: string) {
-    return documentRepository.findByWorkspace(
-      new Types.ObjectId(workspaceId),
-      new Types.ObjectId(user['id'])
-    );
+  async getWorkspaceDocuments(
+    user: JwtPayload,
+    workspaceId: string
+  ) {
+    const documents =
+      await documentRepository.findByWorkspace(
+        new Types.ObjectId(workspaceId),
+        new Types.ObjectId(user['id'])
+      );
+
+    return documents.map(toDocumentResponse);
   }
 
   async getById(
     user: JwtPayload,
     documentId: string
-    ) {
-        return documentRepository.findById(
+  ) {
+    const document =
+      await documentRepository.findById(
         new Types.ObjectId(documentId),
         new Types.ObjectId(user['id'])
-    );
+      );
+
+    if (!document) {
+      return null;
     }
+
+    return toDocumentResponse(document);
+  }
 }
 
 export const documentService = new DocumentService();
