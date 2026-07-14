@@ -3,6 +3,7 @@ import type { NextFunction, Request, Response } from 'express';
 import type { DocumentParams } from '@/shared/types/express.types.js';
 
 import { quizService } from './quiz.service.js';
+import { generateQuizSchema } from './quiz.validator.js';
 
 export class QuizController {
   private getDocumentId(req: Request<DocumentParams>) {
@@ -26,10 +27,9 @@ export class QuizController {
   async generate(req: Request<DocumentParams>, res: Response, next: NextFunction) {
     try {
       const documentId = this.getDocumentId(req);
-
       const user = this.getAuthenticatedUser(req);
-
-      const quiz = await quizService.generateDocumentQuiz(user, documentId, req.body);
+      const dto = generateQuizSchema.parse(req.body);
+      const quiz = await quizService.generateDocumentQuiz(user, documentId, dto);
 
       return res.status(200).json({
         success: true,

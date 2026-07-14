@@ -89,6 +89,8 @@ export const baseApi = createApi({
     "Workspace",
     "Document",
     "Summary",
+    "Flashcard",
+    "Quiz"
   ],
 
   endpoints: () => ({}),

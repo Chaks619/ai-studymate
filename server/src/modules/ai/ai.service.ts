@@ -6,6 +6,7 @@ import type { GenerateContentInput, GenerateContentResult } from './ai.types.js'
 
 export class AIService {
   async generate(input: GenerateContentInput): Promise<GenerateContentResult> {
+    console.log("Using Gemini model:", env.GEMINI_MODEL);
     const response = await aiClient.models.generateContent({
       model: env.GEMINI_MODEL,
       contents: input.prompt,

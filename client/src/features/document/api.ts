@@ -1,6 +1,6 @@
 // PDF API endpoints
 export const pdfApi = {
-  uploadPDF: (file: File) => {
+  uploadPDF: (_file: File) => {
     // API call implementation
   },
   getPDFs: () => {
