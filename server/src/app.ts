@@ -6,9 +6,10 @@ import compression from 'compression';
 import morgan from 'morgan';
 import authRoutes from "./modules/auth/auth.routes.js";
 import workspaceRoutes from "./modules/workspace/workspace.routes.js";
-import documentRoutes from "./modules/document/document.routes.js";
-// import aiRoutes from "./modules/ai/ai.routes.js";
-// import { env } from "./config/env.js";
+import documentRoutes from "./modules/document/document.routes.js"
+import summaryRoutes from "./modules/summary/summary.routes.js";
+import flashcardRoutes from "@/modules/flashcards/flashcard.routes.js";
+import quizRoutes from "@/modules/quiz/quiz.routes.js";
 
 const app: Express = express();
 
@@ -51,10 +52,9 @@ app.get('/api/health', (req: Request, res: Response) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/workspaces", workspaceRoutes);
 app.use("/api/documents", documentRoutes);
-// // Unauthenticated: keep it out of production so it can't be used as a free LLM proxy.
-// if (env.NODE_ENV !== 'production') {
-//   app.use("/api/ai", aiRoutes);
-// }
+app.use('/api/documents', summaryRoutes);
+app.use("/api/documents", flashcardRoutes);
+app.use("/api/documents", quizRoutes);
 
 app.use((req: Request, res: Response) => {
   res.status(404).json({
@@ -63,7 +63,6 @@ app.use((req: Request, res: Response) => {
     path: req.path,
   });
 });
-
 interface CustomError extends Error {
   status?: number;
   code?: string;

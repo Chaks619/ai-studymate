@@ -2,7 +2,6 @@ import { Router } from 'express';
 
 import { workspaceController } from './workspace.controller.js';
 import { documentController } from '../document/document.controller.js';
-import { summaryController } from '../summary/summary.controller.js';
 import { authMiddleware } from '@/shared/middlewares/auth.middleware.js';
 import { upload } from '@/shared/middlewares/upload.middleware.js';
 
@@ -24,8 +23,8 @@ router.post('/:workspaceId/documents', upload.single('file'), documentController
 
 router.get("/:workspaceId/documents", documentController.getWorkspaceDocuments.bind(documentController));
 
-router.get('/:workspaceId/summary', (req, res, next) => summaryController.get(req, res, next));
+// router.get('/:workspaceId/summary', (req, res, next) => summaryController.get(req, res, next));
 
-router.post('/:workspaceId/summary', (req, res, next) => summaryController.generate(req, res, next));
+// router.post('/:workspaceId/summary', (req, res, next) => summaryController.generate(req, res, next));
 
 export default router;

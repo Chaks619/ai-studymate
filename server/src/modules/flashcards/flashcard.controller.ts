@@ -1,0 +1,96 @@
+import type {
+  NextFunction,
+  Request,
+  Response,
+} from "express";
+
+import type { DocumentParams } from "@/shared/types/express.types.js";
+
+import { flashcardService } from "./flashcard.service.js";
+
+export class FlashcardController {
+  private getDocumentId(
+    req: Request<DocumentParams>
+  ) {
+    const { documentId } = req.params;
+
+    if (!documentId) {
+      throw new Error(
+        "Document ID is required"
+      );
+    }
+
+    return documentId;
+  }
+
+  private getAuthenticatedUser(
+    req: Request
+  ) {
+    if (!req.user) {
+      throw new Error("Unauthorized");
+    }
+
+    return req.user;
+  }
+
+  async generate(
+    req: Request<DocumentParams>,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const documentId =
+        this.getDocumentId(req);
+
+      const user =
+        this.getAuthenticatedUser(req);
+
+      const flashcards =
+        await flashcardService.generateDocumentFlashcards(
+          user,
+          documentId
+        );
+
+      res.status(200).json({
+        success: true,
+        message:
+          "Flashcards generated successfully",
+        data: flashcards,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async get(
+    req: Request<DocumentParams>,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const documentId =
+        this.getDocumentId(req);
+
+      const user =
+        this.getAuthenticatedUser(req);
+
+      const flashcards =
+        await flashcardService.getDocumentFlashcards(
+          user,
+          documentId
+        );
+
+      res.status(200).json({
+        success: true,
+        message:
+          "Flashcards fetched successfully",
+        data: flashcards,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+}
+
+export const flashcardController =
+  new FlashcardController();

@@ -1,56 +1,60 @@
-import { Types } from 'mongoose';
+import { Types } from "mongoose";
 
-import { workspaceRepository } from '../workspace/workspace.repository.js';
-import { documentRepository } from '../document/document.repository.js';
+import { documentRepository } from "../document/document.repository.js";
 
-import { aiService } from '../ai/ai.service.js';
-import { buildSummaryPrompt } from '../ai/prompts/summary.prompt.js';
+import { aiService } from "../ai/ai.service.js";
+import { buildSummaryPrompt } from "../ai/prompts/summary.prompt.js";
 
-import { summaryRepository } from './summary.repository.js';
-import { SUMMARY_STATUS } from './summary.constants.js';
+import { summaryRepository } from "./summary.repository.js";
+import { SUMMARY_STATUS } from "./summary.constants.js";
 
-import { env } from '../../config/env.js';
-import type { SafeUser } from '../user/user.mapper.js';
-import { DOCUMENT_STATUS } from '../document/document.constants.js';
+import { env } from "../../config/env.js";
+
+import type { SafeUser } from "../user/user.mapper.js";
+
+import { DOCUMENT_STATUS } from "../document/document.constants.js";
 
 export class SummaryService {
-  async generateWorkspaceSummary(user: SafeUser, workspaceId: string) {
+  async generateDocumentSummary(
+    user: SafeUser,
+    documentId: string
+  ) {
     // ============================================
-    // Verify workspace ownership
-    // ============================================
-
-    const workspace = await workspaceRepository.findByIdAndOwner(workspaceId, user.id);
-
-    if (!workspace) {
-      throw new Error('Workspace not found');
-    }
-
-    // ============================================
-    // Load workspace documents
+    // Verify document ownership
     // ============================================
 
-    const documents = await documentRepository.findByWorkspace(workspaceId);
-
-    const readyDocuments = documents.filter(
-      (doc) =>
-        doc.processing?.status === DOCUMENT_STATUS.READY && doc.extractedText.trim().length > 0
+    const document = await documentRepository.findById(
+      new Types.ObjectId(documentId),
+      new Types.ObjectId(user.id)
     );
 
-    if (readyDocuments.length === 0) {
-      throw new Error('No processed documents found');
+    if (!document) {
+      throw new Error("Document not found");
     }
 
     // ============================================
-    // Merge extracted text
+    // Verify processing completed
     // ============================================
 
-    const combinedText = readyDocuments.map((doc) => doc.extractedText).join('\n\n');
+    if (document.processing?.status !== DOCUMENT_STATUS.READY) {
+      throw new Error("Document is still processing");
+    }
+
+    if (!document.extractedText?.trim()) {
+      throw new Error("Document contains no extracted text");
+    }
+
+    if (!document.extractedText.trim()) {
+      throw new Error("Document contains no extracted text");
+    }
 
     // ============================================
     // Build AI Prompt
     // ============================================
 
-    const prompt = buildSummaryPrompt(combinedText);
+    const prompt = buildSummaryPrompt(
+      document.extractedText
+    );
 
     // ============================================
     // Generate Summary
@@ -62,47 +66,90 @@ export class SummaryService {
       prompt,
     });
 
-    const generationTimeMs = Date.now() - startedAt;
+    const generationTimeMs =
+      Date.now() - startedAt;
 
     // ============================================
     // Save Summary
     // ============================================
 
-    const existingSummary = await summaryRepository.findByWorkspace(workspaceId);
+    const existingSummary =
+      await summaryRepository.findByDocument(
+        documentId
+      );
+
+    let summary;
 
     if (!existingSummary) {
-      return await summaryRepository.create({
-        workspace: new Types.ObjectId(workspaceId),
+      summary = await summaryRepository.create({
+        document: new Types.ObjectId(documentId),
+
         content: aiResponse.text,
+
         status: SUMMARY_STATUS.READY,
+
         model: env.GEMINI_MODEL,
+
         generationTimeMs,
       });
+    } else {
+      summary =
+        await summaryRepository.updateByDocument(
+          documentId,
+          {
+            content: aiResponse.text,
+
+            status: SUMMARY_STATUS.READY,
+
+            model: env.GEMINI_MODEL,
+
+            generationTimeMs,
+          }
+        );
     }
 
-    return await summaryRepository.updateByWorkspace(workspaceId, {
-      content: aiResponse.text,
-      status: SUMMARY_STATUS.READY,
-      model: env.GEMINI_MODEL,
-      generationTimeMs,
-    });
+    // ============================================
+    // Update Document AI Flags
+    // ============================================
+
+    await documentRepository.updateById(
+      documentId,
+      {
+        ai: {
+          ...document.ai,
+          summaryGenerated: true,
+        },
+      }
+    );
+
+    return summary;
   }
 
-  async getWorkspaceSummary(user: SafeUser, workspaceId: string) {
-    const workspace = await workspaceRepository.findByIdAndOwner(workspaceId, user.id);
+  async getDocumentSummary(
+    user: SafeUser,
+    documentId: string
+  ) {
+    const document = await documentRepository.findById(
+      new Types.ObjectId(documentId),
+      new Types.ObjectId(user.id)
+    );
 
-    if (!workspace) {
-      throw new Error('Workspace not found');
+    if (!document) {
+      throw new Error("Document not found");
     }
 
-    const summary = await summaryRepository.findByWorkspace(workspaceId);
+    const summary =
+      await summaryRepository.findByDocument(
+        documentId
+      );
 
     if (!summary) {
-      throw new Error('Summary not found');
+      throw new Error("Summary not found");
     }
 
     return summary;
   }
 }
 
-export const summaryService = new SummaryService();
+export const summaryService =
+  new SummaryService();

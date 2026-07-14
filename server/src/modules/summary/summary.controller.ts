@@ -1,18 +1,18 @@
 import type { NextFunction, Request, Response } from "express";
 
-import type { WorkspaceParams } from "@/shared/types/express.types.js";
+import type { DocumentParams } from "@/shared/types/express.types.js";
 
 import { summaryService } from "./summary.service.js";
 
 export class SummaryController {
-  private getWorkspaceId(req: Request<WorkspaceParams>): string {
-    const workspaceId = req.params.workspaceId;
+  private getDocumentId(req: Request<DocumentParams>): string {
+    const documentId = req.params.documentId;
 
-    if (!workspaceId) {
-      throw new Error("Workspace ID is required");
+    if (!documentId) {
+      throw new Error("Document ID is required");
     }
 
-    return workspaceId;
+    return documentId;
   }
 
   private getAuthenticatedUser(req: Request) {
@@ -24,20 +24,20 @@ export class SummaryController {
   }
 
   async generate(
-    req: Request<WorkspaceParams>,
+    req: Request<DocumentParams>,
     res: Response,
     next: NextFunction
   ) {
     try {
-      const workspaceId = this.getWorkspaceId(req);
+      const documentId = this.getDocumentId(req);
       const user = this.getAuthenticatedUser(req);
 
-      const summary = await summaryService.generateWorkspaceSummary(
+      const summary = await summaryService.generateDocumentSummary(
         user,
-        workspaceId
+        documentId
       );
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: "Summary generated successfully",
         data: summary,
@@ -48,20 +48,20 @@ export class SummaryController {
   }
 
   async get(
-    req: Request<WorkspaceParams>,
+    req: Request<DocumentParams>,
     res: Response,
     next: NextFunction
   ) {
     try {
-      const workspaceId = this.getWorkspaceId(req);
+      const documentId = this.getDocumentId(req);
       const user = this.getAuthenticatedUser(req);
 
-      const summary = await summaryService.getWorkspaceSummary(
+      const summary = await summaryService.getDocumentSummary(
         user,
-        workspaceId
+        documentId
       );
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: "Summary fetched successfully",
         data: summary,

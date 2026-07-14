@@ -10,9 +10,9 @@ import type { Summary } from "./summary.types.js";
 
 const summarySchema = new Schema(
   {
-    workspace: {
+    document: {
       type: Types.ObjectId,
-      ref: "Workspace",
+      ref: "Document",
       required: true,
       unique: true,
       index: true,

@@ -15,34 +15,34 @@ export class SummaryRepository {
     return await SummaryModel.create(data);
   }
 
-  async findByWorkspace(
-    workspaceId: string
+  async findByDocument(
+    documentId: string
   ): Promise<SummaryDocument | null> {
     return await SummaryModel.findOne({
-      workspace: workspaceId,
+      document: documentId,
     });
   }
 
-  async updateByWorkspace(
-    workspaceId: string,
+  async updateByDocument(
+    documentId: string,
     data: UpdateSummaryInput
   ): Promise<SummaryDocument | null> {
     return await SummaryModel.findOneAndUpdate(
       {
-        workspace: workspaceId,
+        document: documentId,
       },
       data,
       {
-        new: true,
+        returnDocument: "after",
       }
     );
   }
 
-  async deleteByWorkspace(
-    workspaceId: string
+  async deleteByDocument(
+    documentId: string
   ): Promise<void> {
     await SummaryModel.deleteOne({
-      workspace: workspaceId,
+      document: documentId,
     });
   }
 }

@@ -2,7 +2,7 @@ import { Types } from "mongoose";
 import type { SummaryStatus } from "./summary.constants.js";
 
 export interface Summary {
-  workspace: Types.ObjectId;
+  document: Types.ObjectId;
 
   content: string;
 
@@ -18,7 +18,7 @@ export interface Summary {
 }
 
 export interface CreateSummaryInput {
-  workspace: Types.ObjectId;
+  document: Types.ObjectId;
 
   content: string;
 
