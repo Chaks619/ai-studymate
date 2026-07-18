@@ -17,6 +17,15 @@ const envSchema = z.object({
   CLOUDINARY_API_SECRET: z.string(),
   GEMINI_API_KEY: z.string().min(1),
   GEMINI_MODEL: z.string().default('gemini-3.5-flash'),
+
+  /**
+   * Escape hatch for local CRUD testing without burning Gemini calls.
+   * Not z.coerce.boolean() — that maps the string "false" to true.
+   */
+  ENABLE_AI: z
+    .enum(['true', 'false'])
+    .default('true')
+    .transform((value) => value === 'true'),
 });
 
 const parsedEnv = envSchema.parse(process.env);
@@ -35,4 +44,5 @@ export const env = {
   CLOUDINARY_API_SECRET: parsedEnv.CLOUDINARY_API_SECRET,
   GEMINI_API_KEY: parsedEnv.GEMINI_API_KEY,
   GEMINI_MODEL: parsedEnv.GEMINI_MODEL,
+  ENABLE_AI: parsedEnv.ENABLE_AI,
 };

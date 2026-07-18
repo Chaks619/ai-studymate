@@ -10,11 +10,12 @@ export function WorkspaceGrid({
   workspaces,
 }: WorkspaceGridProps) {
   return (
-    <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-      {workspaces.map((workspace) => (
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      {workspaces.map((workspace, index) => (
         <WorkspaceCard
           key={workspace.id}
           workspace={workspace}
+          index={index}
         />
       ))}
     </div>

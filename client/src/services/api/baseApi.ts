@@ -90,7 +90,8 @@ export const baseApi = createApi({
     "Document",
     "Summary",
     "Flashcard",
-    "Quiz"
+    "Quiz",
+    "Conversation"
   ],
 
   endpoints: () => ({}),

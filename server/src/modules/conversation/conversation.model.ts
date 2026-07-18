@@ -40,6 +40,11 @@ const conversationSchema = new Schema(
       default: 0,
     },
 
+    titleGenerated: {
+      type: Boolean,
+      default: false,
+    },
+
     isArchived: {
       type: Boolean,
       default: false,

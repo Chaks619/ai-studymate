@@ -28,6 +28,24 @@ export class MessageRepository {
       });
   }
 
+  async findRecentMessages(
+    conversation: Types.ObjectId,
+    limit = 10
+  ) {
+    return MessageModel.find({
+      conversation,
+    })
+      .sort({
+        createdAt: -1,
+      })
+      .limit(limit)
+      .lean();
+  }
+
+  async deleteById(id: Types.ObjectId) {
+    await MessageModel.deleteOne({ _id: id });
+  }
+
   async deleteByConversation(
     conversation: Types.ObjectId
   ) {

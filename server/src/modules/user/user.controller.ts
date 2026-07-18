@@ -1,5 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 
+import { ApiError } from "@/shared/errors/index.js";
+
 import { userService } from "./user.service.js";
 import {
   changePasswordSchema,
@@ -11,7 +13,7 @@ import {
 export class UserController {
   private getAuthenticatedUser(req: Request) {
     if (!req.user) {
-      throw new Error("Unauthorized");
+      throw ApiError.unauthorized("Unauthorized");
     }
 
     return req.user;

@@ -7,6 +7,7 @@ import type {
   UpdateWorkspaceInput,
 } from "./workspace.types.js";
 import type { SafeUser } from "../user/user.mapper.js";
+import { ApiError, ERROR_CODES } from "@/shared/errors/index.js";
 
 export class WorkspaceService {
   async createWorkspace(
@@ -27,34 +28,61 @@ export class WorkspaceService {
     return workspaces.map(toWorkspaceResponse);
   }
 
-  async getWorkspace(id: string) {
-    const workspace = await workspaceRepository.findById(id);
+  /**
+   * Every lookup below is scoped to the caller. A workspace belonging to
+   * someone else reports as missing rather than forbidden, so an id cannot be
+   * probed for existence.
+   */
+  async getWorkspace(user: SafeUser, id: string) {
+    const workspace = await workspaceRepository.findByIdAndOwner(
+      id,
+      user.id
+    );
 
     if (!workspace) {
-      throw new Error("Workspace not found");
+      throw ApiError.notFound(
+        "Workspace not found",
+        ERROR_CODES.WORKSPACE_NOT_FOUND
+      );
     }
 
     return toWorkspaceResponse(workspace);
   }
 
   async updateWorkspace(
+    user: SafeUser,
     id: string,
     data: UpdateWorkspaceInput
   ) {
-    const workspace = await workspaceRepository.updateById(id, data);
+    const workspace =
+      await workspaceRepository.updateByIdAndOwner(
+        id,
+        user.id,
+        data
+      );
 
     if (!workspace) {
-      throw new Error("Workspace not found");
+      throw ApiError.notFound(
+        "Workspace not found",
+        ERROR_CODES.WORKSPACE_NOT_FOUND
+      );
     }
 
     return toWorkspaceResponse(workspace);
   }
 
-  async archiveWorkspace(id: string) {
-    const workspace = await workspaceRepository.archive(id);
+  async archiveWorkspace(user: SafeUser, id: string) {
+    const workspace =
+      await workspaceRepository.archiveByIdAndOwner(
+        id,
+        user.id
+      );
 
     if (!workspace) {
-      throw new Error("Workspace not found");
+      throw ApiError.notFound(
+        "Workspace not found",
+        ERROR_CODES.WORKSPACE_NOT_FOUND
+      );
     }
 
     return toWorkspaceResponse(workspace);

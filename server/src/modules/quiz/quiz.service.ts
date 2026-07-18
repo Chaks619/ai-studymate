@@ -7,6 +7,7 @@ import { aiService } from '../ai/ai.service.js';
 import { quizRepository } from './quiz.repository.js';
 import { QUIZ_STATUS } from './quiz.constants.js';
 import { parseAiJson } from '@/shared/utils/parse-ai-json.js';
+import { ApiError, ERROR_CODES } from '@/shared/errors/index.js';
 import { env } from '@/config/env.js';
 import type { QuizAIResponse } from './quiz.types.js';
 import { buildQuizPrompt } from './quiz.prompt.js';
@@ -20,15 +21,24 @@ export class QuizService {
     );
 
     if (!document) {
-      throw new Error('Document not found');
+      throw ApiError.notFound(
+        'Document not found',
+        ERROR_CODES.DOCUMENT_NOT_FOUND
+      );
     }
 
     if (document.processing?.status !== DOCUMENT_STATUS.READY) {
-      throw new Error('Document is still processing');
+      throw ApiError.conflict(
+        'Document is still processing',
+        ERROR_CODES.DOCUMENT_NOT_READY
+      );
     }
 
     if (!document.extractedText?.trim()) {
-      throw new Error('Document contains no extracted text');
+      throw ApiError.unprocessable(
+        'Document contains no extracted text',
+        ERROR_CODES.DOCUMENT_EMPTY
+      );
     }
 
     const questionCount = dto.questionCount ?? user.preferences.quizQuestionCount;
@@ -100,13 +110,19 @@ export class QuizService {
     );
 
     if (!document) {
-      throw new Error('Document not found');
+      throw ApiError.notFound(
+        'Document not found',
+        ERROR_CODES.DOCUMENT_NOT_FOUND
+      );
     }
 
     const quiz = await quizRepository.findByDocument(documentId);
 
     if (!quiz) {
-      throw new Error('Quiz not found');
+      throw ApiError.notFound(
+        'Quiz not found',
+        ERROR_CODES.QUIZ_NOT_FOUND
+      );
     }
 
     return quiz;

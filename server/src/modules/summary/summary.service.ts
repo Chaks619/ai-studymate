@@ -13,6 +13,7 @@ import { env } from "../../config/env.js";
 import type { SafeUser } from "../user/user.mapper.js";
 
 import { DOCUMENT_STATUS } from "../document/document.constants.js";
+import { ApiError, ERROR_CODES } from "@/shared/errors/index.js";
 
 export class SummaryService {
   async generateDocumentSummary(
@@ -29,7 +30,10 @@ export class SummaryService {
     );
 
     if (!document) {
-      throw new Error("Document not found");
+      throw ApiError.notFound(
+        "Document not found",
+        ERROR_CODES.DOCUMENT_NOT_FOUND
+      );
     }
 
     // ============================================
@@ -37,15 +41,17 @@ export class SummaryService {
     // ============================================
 
     if (document.processing?.status !== DOCUMENT_STATUS.READY) {
-      throw new Error("Document is still processing");
+      throw ApiError.conflict(
+        "Document is still processing",
+        ERROR_CODES.DOCUMENT_NOT_READY
+      );
     }
 
     if (!document.extractedText?.trim()) {
-      throw new Error("Document contains no extracted text");
-    }
-
-    if (!document.extractedText.trim()) {
-      throw new Error("Document contains no extracted text");
+      throw ApiError.unprocessable(
+        "Document contains no extracted text",
+        ERROR_CODES.DOCUMENT_EMPTY
+      );
     }
 
     // ============================================
@@ -136,7 +142,10 @@ export class SummaryService {
     );
 
     if (!document) {
-      throw new Error("Document not found");
+      throw ApiError.notFound(
+        "Document not found",
+        ERROR_CODES.DOCUMENT_NOT_FOUND
+      );
     }
 
     const summary =
@@ -145,7 +154,10 @@ export class SummaryService {
       );
 
     if (!summary) {
-      throw new Error("Summary not found");
+      throw ApiError.notFound(
+        "Summary not found",
+        ERROR_CODES.SUMMARY_NOT_FOUND
+      );
     }
 
     return summary;

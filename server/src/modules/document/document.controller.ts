@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import { documentService } from './document.service.js';
 import type { IdParams, WorkspaceParams } from '../../shared/types/express.types.js';
+import { assertObjectId } from '../../shared/utils/object-id.js';
 
 export class DocumentController {
   async upload(req: Request<WorkspaceParams>, res: Response, next: NextFunction) {
@@ -25,7 +26,7 @@ export class DocumentController {
 
       const document = await documentService.uploadDocument(
         req.user,
-        req.params.workspaceId,
+        assertObjectId(req.params.workspaceId, 'workspace ID'),
         req.file
       );
 
@@ -51,7 +52,7 @@ export class DocumentController {
 
       const documents = await documentService.getWorkspaceDocuments(
         req.user,
-        req.params.workspaceId
+        assertObjectId(req.params.workspaceId, 'workspace ID')
       );
 
       res.status(200).json({
@@ -72,7 +73,10 @@ export class DocumentController {
         });
       }
 
-      const document = await documentService.getById(req.user, req.params.id);
+      const document = await documentService.getById(
+        req.user,
+        assertObjectId(req.params.id, 'document ID')
+      );
 
       res.json({
         success: true,

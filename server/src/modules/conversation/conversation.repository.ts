@@ -65,6 +65,14 @@ export class ConversationRepository {
     );
   }
 
+  async delete(
+    id: Types.ObjectId
+  ) {
+    await ConversationModel.deleteOne({
+      _id: id,
+    });
+  }
+
 }
 export const conversationRepository =
   new ConversationRepository();

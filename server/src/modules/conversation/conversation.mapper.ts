@@ -7,6 +7,7 @@ export interface SafeConversation {
   title: string;
   lastMessage: string;
   messageCount: number;
+  titleGenerated: boolean;
   isArchived: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -22,6 +23,7 @@ export function toSafeConversation(
     title: conversation.title,
     lastMessage: conversation.lastMessage,
     messageCount: conversation.messageCount,
+    titleGenerated: conversation.titleGenerated,
     isArchived: conversation.isArchived,
     createdAt: conversation.createdAt,
     updatedAt: conversation.updatedAt,

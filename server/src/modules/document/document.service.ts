@@ -2,6 +2,7 @@ import { Types } from 'mongoose';
 import type { JwtPayload } from 'jsonwebtoken';
 
 import { uploadPdfToCloudinary } from '@/shared/utils/cloudinary-upload.js';
+import { ApiError, ERROR_CODES } from '@/shared/errors/index.js';
 
 import { workspaceRepository } from '../workspace/workspace.repository.js';
 import type { SafeUser } from '../user/user.mapper.js';
@@ -23,7 +24,10 @@ export class DocumentService {
     );
 
     if (!workspace) {
-      throw new Error('Workspace not found');
+      throw ApiError.notFound(
+        'Workspace not found',
+        ERROR_CODES.WORKSPACE_NOT_FOUND
+      );
     }
 
     const uploadedFile = await uploadPdfToCloudinary(
@@ -68,7 +72,9 @@ export class DocumentService {
       const fileUrl = document.file?.url;
 
       if (!fileUrl) {
-        throw new Error('Document file URL is missing');
+        throw ApiError.internal(
+          'Document file URL is missing'
+        );
       }
 
       const processedDocument =
@@ -86,7 +92,7 @@ export class DocumentService {
         });
 
       if (!updatedDocument) {
-        throw new Error('Document not found');
+        throw ApiError.internal('Document not found');
       }
 
       return toDocumentResponse(updatedDocument);
@@ -101,7 +107,10 @@ export class DocumentService {
         },
       });
 
-      throw new Error('Failed to process PDF');
+      throw ApiError.internal(
+        'Failed to process PDF',
+        ERROR_CODES.DOCUMENT_PROCESSING_FAILED
+      );
     }
   }
 

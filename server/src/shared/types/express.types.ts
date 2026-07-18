@@ -13,6 +13,10 @@ export interface DocumentParams extends ParamsDictionary {
   documentId: string;
 }
 
+export interface ConversationParams extends ParamsDictionary {
+  conversationId: string;
+}
+
 export interface QuizParams{
   workspaceId: string;
   quizId: string;

@@ -2,6 +2,9 @@ import type { NextFunction, Request, Response } from "express";
 
 import type { DocumentParams } from "@/shared/types/express.types.js";
 
+import { ApiError, ERROR_CODES } from "@/shared/errors/index.js";
+import { assertObjectId } from "@/shared/utils/object-id.js";
+
 import { summaryService } from "./summary.service.js";
 
 export class SummaryController {
@@ -9,15 +12,18 @@ export class SummaryController {
     const documentId = req.params.documentId;
 
     if (!documentId) {
-      throw new Error("Document ID is required");
+      throw ApiError.badRequest(
+        "Document ID is required",
+        ERROR_CODES.MISSING_PARAMETER
+      );
     }
 
-    return documentId;
+    return assertObjectId(documentId, "document ID");
   }
 
   private getAuthenticatedUser(req: Request) {
     if (!req.user) {
-      throw new Error("Unauthorized Access");
+      throw ApiError.unauthorized("Unauthorized");
     }
 
     return req.user;

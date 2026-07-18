@@ -5,6 +5,8 @@ import helmet from 'helmet';
 import compression from 'compression';
 import morgan from 'morgan';
 import { ZodError } from 'zod';
+import { env } from './config/env.js';
+import { ApiError, ERROR_CODES, HTTP_STATUS } from './shared/errors/index.js';
 import authRoutes from "./modules/auth/auth.routes.js";
 import userRoutes from "./modules/user/user.routes.js";
 import workspaceRoutes from "./modules/workspace/workspace.routes.js";
@@ -12,6 +14,10 @@ import documentRoutes from "./modules/document/document.routes.js"
 import summaryRoutes from "./modules/summary/summary.routes.js";
 import flashcardRoutes from "@/modules/flashcards/flashcard.routes.js";
 import quizRoutes from "@/modules/quiz/quiz.routes.js";
+import {
+  conversationRoutes,
+  documentConversationRoutes,
+} from "@/modules/conversation/conversation.routes.js";
 
 const app: Express = express();
 
@@ -42,7 +48,7 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(cookieParser());
 
 
-app.get('/api/health', (req: Request, res: Response) => {
+app.get('/api/health', (_req: Request, res: Response) => {
   res.json({
     success: true,
     message: 'Server is running',
@@ -58,6 +64,8 @@ app.use("/api/documents", documentRoutes);
 app.use('/api/documents', summaryRoutes);
 app.use("/api/documents", flashcardRoutes);
 app.use("/api/documents", quizRoutes);
+app.use("/api/documents", documentConversationRoutes);
+app.use("/api/conversations", conversationRoutes);
 
 app.use((req: Request, res: Response) => {
   res.status(404).json({
@@ -66,19 +74,15 @@ app.use((req: Request, res: Response) => {
     path: req.path,
   });
 });
-interface CustomError extends Error {
-  status?: number;
-  code?: string;
-}
-
-app.use((err: CustomError, req: Request, res: Response, next: NextFunction) => {
-  console.error('Error:', err);
-
+// All four parameters are required — Express identifies an error handler by
+// its arity, so `next` cannot be dropped even though it is unused.
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   // Validation failures are the caller's fault, not ours — without this they
   // surface as a 500 and read like the server fell over.
   if (err instanceof ZodError) {
-    res.status(400).json({
+    res.status(HTTP_STATUS.BAD_REQUEST).json({
       success: false,
+      code: ERROR_CODES.VALIDATION_FAILED,
       message: err.issues[0]?.message ?? 'Invalid request',
       errors: err.issues.map((issue) => ({
         path: issue.path.join('.'),
@@ -89,13 +93,27 @@ app.use((err: CustomError, req: Request, res: Response, next: NextFunction) => {
     return;
   }
 
-  const status = err.status || 500;
-  const message = err.message || 'Internal Server Error';
+  // Deliberate, client-facing failures. The message was written to be read by
+  // the caller, so it is safe to send verbatim in any environment.
+  if (err instanceof ApiError) {
+    res.status(err.status).json({
+      success: false,
+      code: err.code,
+      message: err.message,
+    });
 
-  res.status(status).json({
+    return;
+  }
+
+  // Anything else is a bug. Log it in full, but never echo the message — it
+  // can carry a stack, a driver error, or a connection string.
+  console.error('Unhandled error:', err);
+
+  res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
     success: false,
-    message,
-    error: process.env['NODE_ENV'] === 'development' ? err : undefined,
+    code: ERROR_CODES.INTERNAL_ERROR,
+    message: 'Internal Server Error',
+    error: env.NODE_ENV === 'development' ? err.message : undefined,
   });
 });
 

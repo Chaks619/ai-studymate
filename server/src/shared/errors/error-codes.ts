@@ -1,0 +1,50 @@
+/**
+ * Stable, machine-readable identifiers for the failures a client can act on.
+ * The message that travels with an ApiError is for humans and may be reworded
+ * freely; the code is the contract the frontend switches on, so renaming one
+ * is a breaking change.
+ */
+export const ERROR_CODES = {
+  // Request
+  VALIDATION_FAILED: "VALIDATION_FAILED",
+  MISSING_PARAMETER: "MISSING_PARAMETER",
+  INVALID_PARAMETER: "INVALID_PARAMETER",
+
+  // Auth
+  UNAUTHORIZED: "UNAUTHORIZED",
+  INVALID_CREDENTIALS: "INVALID_CREDENTIALS",
+  INVALID_REFRESH_TOKEN: "INVALID_REFRESH_TOKEN",
+
+  // User
+  USER_NOT_FOUND: "USER_NOT_FOUND",
+  USER_ALREADY_EXISTS: "USER_ALREADY_EXISTS",
+
+  // Workspace
+  WORKSPACE_NOT_FOUND: "WORKSPACE_NOT_FOUND",
+
+  // Document
+  DOCUMENT_NOT_FOUND: "DOCUMENT_NOT_FOUND",
+  DOCUMENT_NOT_READY: "DOCUMENT_NOT_READY",
+  DOCUMENT_EMPTY: "DOCUMENT_EMPTY",
+  DOCUMENT_PROCESSING_FAILED: "DOCUMENT_PROCESSING_FAILED",
+
+  // AI artefacts
+  SUMMARY_NOT_FOUND: "SUMMARY_NOT_FOUND",
+  FLASHCARDS_NOT_FOUND: "FLASHCARDS_NOT_FOUND",
+  QUIZ_NOT_FOUND: "QUIZ_NOT_FOUND",
+
+  // Conversation
+  CONVERSATION_NOT_FOUND: "CONVERSATION_NOT_FOUND",
+  CONVERSATION_NOTHING_TO_REGENERATE:
+    "CONVERSATION_NOTHING_TO_REGENERATE",
+
+  // AI provider
+  AI_DISABLED: "AI_DISABLED",
+  AI_INVALID_RESPONSE: "AI_INVALID_RESPONSE",
+
+  // Fallback
+  INTERNAL_ERROR: "INTERNAL_ERROR",
+} as const;
+
+export type ErrorCode =
+  (typeof ERROR_CODES)[keyof typeof ERROR_CODES];

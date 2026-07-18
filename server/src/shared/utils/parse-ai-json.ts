@@ -1,3 +1,5 @@
+import { ApiError, ERROR_CODES } from "../errors/index.js";
+
 export function parseAiJson<T>(response: string): T {
   try {
     const cleaned = response
@@ -15,9 +17,14 @@ export function parseAiJson<T>(response: string): T {
     const json = cleaned.slice(start, end + 1);
 
     return JSON.parse(json) as T;
-  } catch (error) {
+  } catch {
     console.error("Failed to parse AI response:", response);
 
-    throw new Error("AI returned an invalid JSON response");
+    // 502, not 500: the request was fine and our handling was fine — the
+    // upstream model returned something we cannot use.
+    throw ApiError.badGateway(
+      "AI returned an invalid response",
+      ERROR_CODES.AI_INVALID_RESPONSE
+    );
   }
 }

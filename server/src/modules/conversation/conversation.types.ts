@@ -11,6 +11,8 @@ export interface Conversation {
 
   messageCount: number;
 
+  titleGenerated: boolean;
+
   isArchived: boolean;
 
   createdAt: Date;
@@ -29,6 +31,8 @@ export interface CreateConversationInput {
 
   messageCount?: number;
 
+  titleGenerated?: boolean;
+
   isArchived?: boolean;
 }
 
@@ -38,6 +42,8 @@ export interface UpdateConversationInput {
   lastMessage?: string;
 
   messageCount?: number;
+
+  titleGenerated?: boolean;
 
   isArchived?: boolean;
 }

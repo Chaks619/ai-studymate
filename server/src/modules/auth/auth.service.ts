@@ -6,6 +6,7 @@ import {
   verifyRefreshToken,
 } from '../../shared/lib/jwt.js';
 import { toSafeUser } from '../user/user.mapper.js';
+import { ApiError, ERROR_CODES } from '../../shared/errors/index.js';
 
 import type { RegisterDto } from './validators/register.validator.js';
 import type { LoginDto } from './validators/login.validator.js';
@@ -15,7 +16,10 @@ export class AuthService {
     const existingUser = await userRepository.findByEmail(data.email);
 
     if (existingUser) {
-      throw new Error('User already exists');
+      throw ApiError.conflict(
+        'User already exists',
+        ERROR_CODES.USER_ALREADY_EXISTS
+      );
     }
 
     const hashedPassword = await hashPassword(data.password);
@@ -29,7 +33,7 @@ export class AuthService {
     const user = await userRepository.findById(createdUser.id);
 
     if (!user) {
-      throw new Error('Failed to create user');
+      throw ApiError.internal('Failed to create user');
     }
 
     return toSafeUser(user);
@@ -39,13 +43,19 @@ export class AuthService {
     const user = await userRepository.findByEmail(data.email);
 
     if (!user) {
-      throw new Error('Invalid email or password');
+      throw ApiError.unauthorized(
+        'Invalid email or password',
+        ERROR_CODES.INVALID_CREDENTIALS
+      );
     }
 
     const isPasswordValid = await comparePassword(data.password, user.password);
 
     if (!isPasswordValid) {
-      throw new Error('Invalid email or password');
+      throw ApiError.unauthorized(
+        'Invalid email or password',
+        ERROR_CODES.INVALID_CREDENTIALS
+      );
     }
 
     const tokens = generateAuthTokens({
@@ -62,7 +72,7 @@ export class AuthService {
     });
 
     if (!updatedUser) {
-      throw new Error('Failed to update user');
+      throw ApiError.internal('Failed to update user');
     }
 
     return {
@@ -81,18 +91,30 @@ export class AuthService {
 
     const user = await userRepository.findByIdWithRefreshToken(payload.sub);
 
+    // The token parsed, but its subject is gone. Reported as a bad token
+    // rather than a missing user — the caller is not authenticated, and
+    // saying which accounts exist tells an attacker something.
     if (!user) {
-      throw new Error('User not found');
+      throw ApiError.unauthorized(
+        'Invalid refresh token',
+        ERROR_CODES.INVALID_REFRESH_TOKEN
+      );
     }
 
     if (!user.hashedRefreshToken) {
-      throw new Error('Invalid refresh token');
+      throw ApiError.unauthorized(
+        'Invalid refresh token',
+        ERROR_CODES.INVALID_REFRESH_TOKEN
+      );
     }
 
     const isValid = await comparePassword(refreshToken, user.hashedRefreshToken);
 
     if (!isValid) {
-      throw new Error('Invalid refresh token');
+      throw ApiError.unauthorized(
+        'Invalid refresh token',
+        ERROR_CODES.INVALID_REFRESH_TOKEN
+      );
     }
 
     const tokens = generateAuthTokens({
@@ -115,7 +137,10 @@ export class AuthService {
     const user = await userRepository.findById(userId);
 
     if (!user) {
-      throw new Error('User not found');
+      throw ApiError.notFound(
+        'User not found',
+        ERROR_CODES.USER_NOT_FOUND
+      );
     }
 
     return toSafeUser(user);

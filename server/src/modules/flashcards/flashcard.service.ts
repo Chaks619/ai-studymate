@@ -11,6 +11,7 @@ import { flashcardRepository } from "./flashcard.repository.js";
 import { FLASHCARD_STATUS } from "./flashcard.constants.js";
 
 import { parseAiJson } from "@/shared/utils/parse-ai-json.js";
+import { ApiError, ERROR_CODES } from "@/shared/errors/index.js";
 
 import { env } from "@/config/env.js";
 
@@ -34,19 +35,26 @@ export class FlashcardService {
     );
 
     if (!document) {
-      throw new Error("Document not found");
+      throw ApiError.notFound(
+        "Document not found",
+        ERROR_CODES.DOCUMENT_NOT_FOUND
+      );
     }
 
     if (
       document.processing?.status !==
       DOCUMENT_STATUS.READY
     ) {
-      throw new Error("Document is still processing");
+      throw ApiError.conflict(
+        "Document is still processing",
+        ERROR_CODES.DOCUMENT_NOT_READY
+      );
     }
 
     if (!document.extractedText?.trim()) {
-      throw new Error(
-        "Document contains no extracted text"
+      throw ApiError.unprocessable(
+        "Document contains no extracted text",
+        ERROR_CODES.DOCUMENT_EMPTY
       );
     }
 
@@ -147,7 +155,10 @@ export class FlashcardService {
       );
 
     if (!document) {
-      throw new Error("Document not found");
+      throw ApiError.notFound(
+        "Document not found",
+        ERROR_CODES.DOCUMENT_NOT_FOUND
+      );
     }
 
     const flashcards =
@@ -156,8 +167,9 @@ export class FlashcardService {
       );
 
     if (!flashcards) {
-      throw new Error(
-        "Flashcards not found"
+      throw ApiError.notFound(
+        "Flashcards not found",
+        ERROR_CODES.FLASHCARDS_NOT_FOUND
       );
     }
 

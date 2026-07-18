@@ -8,6 +8,7 @@ import { flashcardRepository } from "../flashcards/flashcard.repository.js";
 import { quizRepository } from "../quiz/quiz.repository.js";
 
 import { comparePassword, hashPassword } from "@/shared/utils/password.js";
+import { ApiError, ERROR_CODES } from "@/shared/errors/index.js";
 import {
   destroyCloudinaryAsset,
   uploadAvatarToCloudinary,
@@ -45,7 +46,10 @@ export class UserService {
     });
 
     if (!updated) {
-      throw new Error("User not found");
+      throw ApiError.notFound(
+        "User not found",
+        ERROR_CODES.USER_NOT_FOUND
+      );
     }
 
     return toSafeUser(updated);
@@ -60,7 +64,10 @@ export class UserService {
     });
 
     if (!updated) {
-      throw new Error("User not found");
+      throw ApiError.notFound(
+        "User not found",
+        ERROR_CODES.USER_NOT_FOUND
+      );
     }
 
     return toSafeUser(updated);
@@ -80,7 +87,10 @@ export class UserService {
     });
 
     if (!updated) {
-      throw new Error("User not found");
+      throw ApiError.notFound(
+        "User not found",
+        ERROR_CODES.USER_NOT_FOUND
+      );
     }
 
     return toSafeUser(updated);
@@ -93,7 +103,10 @@ export class UserService {
     const user = await userRepository.findByIdWithPassword(userId);
 
     if (!user) {
-      throw new Error("User not found");
+      throw ApiError.notFound(
+        "User not found",
+        ERROR_CODES.USER_NOT_FOUND
+      );
     }
 
     const isCurrentPasswordValid = await comparePassword(
@@ -102,7 +115,10 @@ export class UserService {
     );
 
     if (!isCurrentPasswordValid) {
-      throw new Error("Current password is incorrect");
+      throw ApiError.unauthorized(
+        "Current password is incorrect",
+        ERROR_CODES.INVALID_CREDENTIALS
+      );
     }
 
     const hashedPassword = await hashPassword(data.newPassword);
@@ -123,13 +139,19 @@ export class UserService {
     const user = await userRepository.findByIdWithPassword(userId);
 
     if (!user) {
-      throw new Error("User not found");
+      throw ApiError.notFound(
+        "User not found",
+        ERROR_CODES.USER_NOT_FOUND
+      );
     }
 
     const isPasswordValid = await comparePassword(password, user.password);
 
     if (!isPasswordValid) {
-      throw new Error("Password is incorrect");
+      throw ApiError.unauthorized(
+        "Password is incorrect",
+        ERROR_CODES.INVALID_CREDENTIALS
+      );
     }
 
     const documents = await documentRepository.findAllByOwner(userId);

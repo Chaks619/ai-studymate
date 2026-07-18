@@ -2,8 +2,18 @@ import type { Request, Response, NextFunction } from 'express';
 import { workspaceService } from './workspace.service.js';
 import type { IdParams } from '@/shared/types/express.types.js';
 import { logger } from '@/config/logger.js';
+import { assertObjectId } from '@/shared/utils/object-id.js';
+import { ApiError } from '@/shared/errors/index.js';
 
 export class WorkspaceController {
+  private getAuthenticatedUser(req: Request) {
+    if (!req.user) {
+      throw ApiError.unauthorized('Unauthorized');
+    }
+
+    return req.user;
+  }
+
   async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       if (!req.user) {
@@ -51,7 +61,12 @@ export class WorkspaceController {
 
   async getById(req: Request<IdParams>, res: Response, next: NextFunction): Promise<void> {
     try {
-      const workspace = await workspaceService.getWorkspace(req.params.id);
+      const user = this.getAuthenticatedUser(req);
+
+      const workspace = await workspaceService.getWorkspace(
+        user,
+        assertObjectId(req.params.id, 'workspace ID')
+      );
 
       res.status(200).json({
         success: true,
@@ -64,7 +79,13 @@ export class WorkspaceController {
 
   async update(req: Request<IdParams>, res: Response, next: NextFunction): Promise<void> {
     try {
-      const workspace = await workspaceService.updateWorkspace(req.params.id, req.body);
+      const user = this.getAuthenticatedUser(req);
+
+      const workspace = await workspaceService.updateWorkspace(
+        user,
+        assertObjectId(req.params.id, 'workspace ID'),
+        req.body
+      );
 
       res.status(200).json({
         success: true,
@@ -78,7 +99,12 @@ export class WorkspaceController {
 
   async archive(req: Request<IdParams>, res: Response, next: NextFunction): Promise<void> {
     try {
-      const workspace = await workspaceService.archiveWorkspace(req.params.id);
+      const user = this.getAuthenticatedUser(req);
+
+      const workspace = await workspaceService.archiveWorkspace(
+        user,
+        assertObjectId(req.params.id, 'workspace ID')
+      );
 
       res.status(200).json({
         success: true,

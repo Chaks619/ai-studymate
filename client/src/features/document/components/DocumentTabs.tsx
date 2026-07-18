@@ -1,6 +1,5 @@
 import type { LucideIcon } from "lucide-react";
 import {
-  BrainCircuit,
   Layers,
   ListChecks,
   MessagesSquare,
@@ -18,6 +17,7 @@ import { StudyPanel, StudyPanelEmpty } from "@/components/common/StudyPanel";
 import { FlashcardSection } from "@/features/flashcard/components/FlashcardSection";
 import { QuizSection } from "@/features/quiz/components/QuizSection";
 import { SummarySection } from "@/features/summary/components/SummarySection";
+import { ConversationSection } from "@/features/conversation/components/ConversationSection";
 import { Document } from "@/types/api/document.types";
 
 interface Props {
@@ -128,17 +128,7 @@ export function DocumentTabs({ document: doc }: Props) {
         </TabsContent>
 
         <TabsContent value="chat">
-          <StudyPanel
-            icon={MessagesSquare}
-            title="Chat with document"
-            description="Ask questions and get grounded answers"
-          >
-            <StudyPanelEmpty
-              icon={BrainCircuit}
-              title="Chat is coming soon"
-              description="Soon you'll be able to ask anything about this document and get answers cited back to the source pages."
-            />
-          </StudyPanel>
+          <ConversationSection documentId={doc.id} />
         </TabsContent>
       </div>
     </Tabs>
