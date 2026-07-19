@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { BookOpen, ChevronRight, Settings } from "lucide-react";
+import { BookOpen, ChevronRight, Gamepad2, Settings } from "lucide-react";
 
 import {
   DEFAULT_SETTINGS_SECTION,
@@ -25,6 +25,7 @@ export function Sidebar() {
   // only be inside a settings section by navigating to one, so there's no
   // third state where the submenu is open but nothing under it is active.
   const inSettings = pathname.startsWith("/settings");
+  const inMinigames = pathname.startsWith("/minigames");
 
   return (
     <aside className="w-72 border-r">
@@ -36,6 +37,14 @@ export function Sidebar() {
         <NavLink to="/" end className={({ isActive }) => linkClass(isActive)}>
           <BookOpen className="size-5" />
           Workspaces
+        </NavLink>
+
+        <NavLink
+          to="/minigames"
+          className={() => linkClass(inMinigames)}
+        >
+          <Gamepad2 className="size-5" />
+          Minigames
         </NavLink>
 
         <NavLink

@@ -2,22 +2,27 @@ import cloudinary from "@/config/cloudinary.js";
 import type { UploadApiResponse } from "cloudinary";
 import { Readable } from "stream";
 
-export const uploadPdfToCloudinary = (
+export const uploadDocumentToCloudinary = (
   buffer: Buffer,
   fileName: string
 ): Promise<UploadApiResponse> => {
   return new Promise((resolve, reject) => {
-    // Keep the .pdf extension on the raw public_id. Without it the delivery
+    // Keep the original extension on the raw public_id. Without it the delivery
     // URL has no extension, so Cloudinary serves the file as
     // application/octet-stream and the browser downloads it (unnamed) instead
-    // of opening it inline.
-    const baseName = fileName.replace(/\.pdf$/i, "");
+    // of opening it — and the extension is what lets each format be recognised.
+    const dot = fileName.lastIndexOf(".");
+    const baseName = dot >= 0 ? fileName.slice(0, dot) : fileName;
+    const extension =
+      dot >= 0 ? fileName.slice(dot + 1).toLowerCase() : "";
 
     const uploadStream = cloudinary.uploader.upload_stream(
       {
         folder: "ai-studymate/documents",
         resource_type: "raw",
-        public_id: `${baseName}.pdf`,
+        public_id: extension
+          ? `${baseName}.${extension}`
+          : baseName,
       },
       (error, result) => {
         if (error) {

@@ -13,7 +13,8 @@ export function DocumentCard({
   const navigate = useNavigate();
 
   const processing = document.processing.status !== "READY";
-  console.log("Document Data ->",document);
+  const fileType =
+    document.file?.extension?.toUpperCase() || "FILE";
 
   return (
     <div
@@ -48,11 +49,13 @@ export function DocumentCard({
         <div className="mt-5 space-y-3">
             <h3 className="line-clamp-1 text-lg font-semibold">{document.title}</h3>
             <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-                <span>PDF</span>
-                <span>•</span>
-                <span>{document.processing.pageCount} pages</span>
-                <span>•</span>
-                <span>{document.processing.language}</span>
+                <span>{fileType}</span>
+                {document.processing.pageCount > 0 ? (
+                  <>
+                    <span>•</span>
+                    <span>{document.processing.pageCount} pages</span>
+                  </>
+                ) : null}
             </div>
 
             <div className="flex flex-wrap gap-2">

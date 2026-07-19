@@ -8,31 +8,40 @@ interface FileDropzoneProps {
   onFileChange: (file: File | null) => void;
 }
 
-const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25 MB
+// Matches the server's 20 MB multer limit, so a file the client accepts can't
+// then be rejected by the API.
+const MAX_FILE_SIZE = 20 * 1024 * 1024;
+
+const ACCEPT = {
+  "application/pdf": [".pdf"],
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+    [".docx"],
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+    [".xlsx"],
+  "text/plain": [".txt"],
+  "text/markdown": [".md", ".markdown"],
+};
+
+function fileExtensionLabel(name: string): string {
+  const dot = name.lastIndexOf(".");
+  return dot >= 0 ? name.slice(dot + 1).toUpperCase() : "File";
+}
 
 export function FileDropzone({
   file,
   onFileChange,
 }: FileDropzoneProps) {
-  const {
-    getRootProps,
-    getInputProps,
-    isDragActive,
-  } = useDropzone({
-    multiple: false,
-
-    accept: {
-      "application/pdf": [".pdf"],
-    },
-
-    maxSize: MAX_FILE_SIZE,
-
-    onDrop: (acceptedFiles) => {
-      if (acceptedFiles.length > 0) {
-        onFileChange(acceptedFiles[0]);
-      }
-    },
-  });
+  const { getRootProps, getInputProps, isDragActive } =
+    useDropzone({
+      multiple: false,
+      accept: ACCEPT,
+      maxSize: MAX_FILE_SIZE,
+      onDrop: (acceptedFiles) => {
+        if (acceptedFiles.length > 0) {
+          onFileChange(acceptedFiles[0]);
+        }
+      },
+    });
 
   if (file) {
     return (
@@ -42,19 +51,17 @@ export function FileDropzone({
             <FileText className="h-10 w-10 text-primary" />
 
             <div>
-              <p className="font-medium">
-                {file.name}
-              </p>
+              <p className="font-medium">{file.name}</p>
 
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">
-                    {(file.size / 1024 / 1024).toFixed(2)} MB
+                  {(file.size / 1024 / 1024).toFixed(2)} MB
                 </p>
 
                 <p className="text-xs text-green-600">
-                    ✓ PDF File
+                  ✓ {fileExtensionLabel(file.name)} file
                 </p>
-            </div>
+              </div>
             </div>
           </div>
 
@@ -99,8 +106,8 @@ export function FileDropzone({
 
       <h3 className="font-semibold">
         {isDragActive
-          ? "Drop your PDF here"
-          : "Drag & Drop your PDF"}
+          ? "Drop your document here"
+          : "Drag & drop your document"}
       </h3>
 
       <p className="mt-2 text-sm text-muted-foreground">
@@ -108,7 +115,7 @@ export function FileDropzone({
       </p>
 
       <p className="mt-4 text-xs text-muted-foreground">
-        PDF only • Max 25 MB
+        PDF, Word, Excel, text, or Markdown • Max 20 MB
       </p>
     </div>
   );

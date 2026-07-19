@@ -42,7 +42,7 @@ export function UploadDocumentForm({
     >
       <div className="space-y-2">
         <label className="text-sm font-medium">
-          PDF File
+          Document
         </label>
 
         <FileDropzone
@@ -50,7 +50,7 @@ export function UploadDocumentForm({
             onFileChange={(selectedFile) => {
                 setFile(selectedFile);
                 if (selectedFile && !titleEdited) {
-                    const generatedTitle = selectedFile.name.replace(/\.pdf$/i, "").replace(/[_-]/g, " ");
+                    const generatedTitle = selectedFile.name.replace(/\.[^.]+$/, "").replace(/[_-]/g, " ");
                     setTitle(generatedTitle);
                 }
             }}

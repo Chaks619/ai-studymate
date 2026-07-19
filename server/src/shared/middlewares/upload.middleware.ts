@@ -1,5 +1,8 @@
 import multer from "multer";
 
+import { isSupportedFile } from "@/modules/document/document.file-types.js";
+import { ApiError, ERROR_CODES } from "@/shared/errors/index.js";
+
 const storage = multer.memoryStorage();
 
 export const upload = multer({
@@ -9,9 +12,16 @@ export const upload = multer({
     fileSize: 20 * 1024 * 1024,
   },
 
-  fileFilter(req, file, cb) {
-    if (file.mimetype !== "application/pdf") {
-      return cb(new Error("Only PDF files are allowed"));
+  fileFilter(_req, file, cb) {
+    if (!isSupportedFile(file.originalname, file.mimetype)) {
+      // An ApiError here reaches the global handler and surfaces as a clean
+      // 400 rather than a generic 500.
+      return cb(
+        ApiError.badRequest(
+          "Unsupported file type. Upload a PDF, Word, Excel, text, or Markdown file.",
+          ERROR_CODES.DOCUMENT_UNSUPPORTED_TYPE
+        )
+      );
     }
 
     cb(null, true);

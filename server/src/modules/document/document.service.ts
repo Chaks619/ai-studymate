@@ -1,13 +1,17 @@
 import { Types } from 'mongoose';
 import type { JwtPayload } from 'jsonwebtoken';
 
-import { uploadPdfToCloudinary } from '@/shared/utils/cloudinary-upload.js';
+import { uploadDocumentToCloudinary } from '@/shared/utils/cloudinary-upload.js';
 import { ApiError, ERROR_CODES } from '@/shared/errors/index.js';
 
 import { workspaceRepository } from '../workspace/workspace.repository.js';
 import type { SafeUser } from '../user/user.mapper.js';
 
 import { DOCUMENT_LANGUAGE, DOCUMENT_STATUS } from './document.constants.js';
+import {
+  getExtension,
+  resolveDocumentType,
+} from './document.file-types.js';
 import { documentProcessor } from './document.processor.js';
 import { documentRepository } from './document.repository.js';
 import { toDocumentResponse } from './document.mapper.js';
@@ -30,7 +34,21 @@ export class DocumentService {
       );
     }
 
-    const uploadedFile = await uploadPdfToCloudinary(
+    // The middleware already rejects unsupported files; this resolves the
+    // canonical type and doubles as a defensive guard.
+    const typeSpec = resolveDocumentType(
+      file.originalname,
+      file.mimetype
+    );
+
+    if (!typeSpec) {
+      throw ApiError.badRequest(
+        'Unsupported file type',
+        ERROR_CODES.DOCUMENT_UNSUPPORTED_TYPE
+      );
+    }
+
+    const uploadedFile = await uploadDocumentToCloudinary(
       file.buffer,
       file.originalname
     );
@@ -40,14 +58,17 @@ export class DocumentService {
 
       workspace: new Types.ObjectId(workspaceId),
 
-      title: file.originalname.replace(/\.pdf$/i, ''),
+      title: file.originalname.replace(/\.[^.]+$/, ''),
 
       description: '',
 
       file: {
         originalName: file.originalname,
         mimeType: file.mimetype,
-        extension: 'pdf',
+        extension:
+          getExtension(file.originalname) ||
+          typeSpec.extensions[0] ||
+          typeSpec.type,
         size: file.size,
         url: uploadedFile.secure_url,
         publicId: uploadedFile.public_id,
@@ -78,7 +99,10 @@ export class DocumentService {
       }
 
       const processedDocument =
-        await documentProcessor.extractText(fileUrl);
+        await documentProcessor.extractText(
+          fileUrl,
+          typeSpec.type
+        );
 
       const updatedDocument =
         await documentRepository.updateById(document.id, {
@@ -108,7 +132,7 @@ export class DocumentService {
       });
 
       throw ApiError.internal(
-        'Failed to process PDF',
+        'Failed to process the uploaded file',
         ERROR_CODES.DOCUMENT_PROCESSING_FAILED
       );
     }

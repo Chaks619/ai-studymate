@@ -33,18 +33,15 @@ export function WorkspaceCard({
       style={{ animationDelay: `${index * 55}ms` }}
       className="animate-enter group relative cursor-pointer overflow-hidden rounded-2xl bg-card p-5 shadow-sm ring-1 ring-foreground/[0.07] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:ring-foreground/12"
     >
-      {/* The workspace's colour as a quiet top accent. */}
+      {/* The theme accent as a quiet top accent — follows the user's chosen
+          accent colour (the --primary token) rather than a fixed hue. */}
       <span
         aria-hidden
-        className="absolute inset-x-0 top-0 h-1 opacity-80 transition-opacity group-hover:opacity-100"
-        style={{ backgroundColor: workspace.color }}
+        className="absolute inset-x-0 top-0 h-1 bg-primary opacity-80 transition-opacity group-hover:opacity-100"
       />
 
       <div className="flex items-start justify-between">
-        <span
-          className="flex size-11 items-center justify-center rounded-xl bg-muted"
-          style={{ color: workspace.color }}
-        >
+        <span className="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
           <FolderOpen className="size-5" />
         </span>
 
