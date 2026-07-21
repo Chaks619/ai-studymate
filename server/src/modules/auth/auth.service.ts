@@ -1,7 +1,6 @@
 import { userRepository } from '../user/user.repository.js';
 import { hashPassword, comparePassword } from '../../shared/utils/password.js';
 import {
-  generateAccessToken,
   generateAuthTokens,
   verifyRefreshToken,
 } from '../../shared/lib/jwt.js';

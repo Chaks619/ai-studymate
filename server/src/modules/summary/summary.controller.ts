@@ -49,7 +49,7 @@ export class SummaryController {
         data: summary,
       });
     } catch (error) {
-      next(error);
+      return next(error);
     }
   }
 
@@ -73,7 +73,7 @@ export class SummaryController {
         data: summary,
       });
     } catch (error) {
-      next(error);
+      return next(error);
     }
   }
 }

@@ -36,7 +36,7 @@ export class DocumentController {
         data: document,
       });
     } catch (error) {
-      next(error);
+      return next(error);
     }
   }
 
@@ -60,7 +60,7 @@ export class DocumentController {
         data: documents,
       });
     } catch (error) {
-      next(error);
+      return next(error);
     }
   }
 
@@ -83,7 +83,7 @@ export class DocumentController {
         data: document,
       });
     } catch (error) {
-      next(error);
+      return next(error);
     }
   }
 }

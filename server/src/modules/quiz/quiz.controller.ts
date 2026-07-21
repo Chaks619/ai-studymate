@@ -43,7 +43,7 @@ export class QuizController {
         data: quiz,
       });
     } catch (error) {
-      next(error);
+      return next(error);
     }
   }
 
@@ -61,7 +61,7 @@ export class QuizController {
         data: quiz,
       });
     } catch (error) {
-      next(error);
+      return next(error);
     }
   }
 }

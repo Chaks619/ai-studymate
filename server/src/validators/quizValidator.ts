@@ -8,7 +8,7 @@ export const createQuizSchema = z.object({
 
 export const submitQuizSchema = z.object({
   quizId: z.string().uuid('Invalid Quiz ID'),
-  answers: z.record(z.string()),
+  answers: z.record(z.string(), z.string()),
 });
 
 export type CreateQuizInput = z.infer<typeof createQuizSchema>;
