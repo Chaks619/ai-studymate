@@ -26,11 +26,17 @@ export function RegisterForm() {
     },
   });
 
-  const onSubmit = async ({ name, email, password }: RegisterForm) => {
+  const onSubmit = async ({
+    name,
+    email,
+    password,
+    confirmPassword,
+  }: RegisterForm) => {
     await registerUser({
       name,
       email,
       password,
+      confirmPassword,
     });
   };
 
