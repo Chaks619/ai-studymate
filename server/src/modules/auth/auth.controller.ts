@@ -84,7 +84,7 @@ export class AuthController {
 
       await authService.logout(req.user.id);
 
-      res.clearCookie('refreshToken');
+      res.clearCookie("refreshToken", refreshCookieOptions);
 
       res.json({
         success: true,
