@@ -33,7 +33,6 @@ export function WorkspaceForm({
     defaultValues: {
       name: "",
       description: "",
-      color: "#3B82F6",
       icon: "book",
       ...defaultValues,
     },
@@ -78,18 +77,6 @@ export function WorkspaceForm({
             {errors.description.message}
           </p>
         )}
-      </div>
-
-      {/* Color */}
-      <div className="space-y-2">
-        <Label htmlFor="color">Color</Label>
-
-        <Input
-          id="color"
-          type="color"
-          className="h-10 w-20 p-1"
-          {...register("color")}
-        />
       </div>
 
       {/* Icon */}

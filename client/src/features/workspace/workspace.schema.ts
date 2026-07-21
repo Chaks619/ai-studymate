@@ -8,8 +8,6 @@ export const workspaceSchema = z.object({
 
   description: z.string().optional(),
 
-  color: z.string(),
-
   icon: z.string(),
 });
 

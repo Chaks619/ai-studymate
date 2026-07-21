@@ -5,7 +5,6 @@ export interface Workspace {
   owner: string;
   name: string;
   description: string;
-  color: string;
   icon: string;
   lastOpenedAt: string | null;
   isArchived: boolean;
@@ -20,13 +19,11 @@ export type WorkspaceListResponse = ApiResponse<Workspace[]>;
 export interface CreateWorkspaceRequest {
   name: string;
   description?: string;
-  color?: string;
   icon?: string;
 }
 
 export interface UpdateWorkspaceRequest {
   name?: string;
   description?: string;
-  color?: string;
   icon?: string;
 }

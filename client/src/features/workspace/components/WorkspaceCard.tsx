@@ -48,7 +48,6 @@ export function WorkspaceCard({
         <div onClick={(event) => event.stopPropagation()}>
           <WorkspaceCardMenu
             onRename={() => {}}
-            onColor={() => {}}
             onArchive={() => {}}
             onDelete={() => {}}
           />

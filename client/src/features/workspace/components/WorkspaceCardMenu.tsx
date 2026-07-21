@@ -9,21 +9,18 @@ import {
 import {
   MoreVertical,
   Pencil,
-  Palette,
   Archive,
   Trash2,
 } from "lucide-react";
 
 interface WorkspaceCardMenuProps {
   onRename?: () => void;
-  onColor?: () => void;
   onArchive?: () => void;
   onDelete?: () => void;
 }
 
 export function WorkspaceCardMenu({
   onRename,
-  onColor,
   onArchive,
   onDelete,
 }: WorkspaceCardMenuProps) {
@@ -36,11 +33,6 @@ export function WorkspaceCardMenu({
             <DropdownMenuItem onClick={onRename}>
                 <Pencil className="mr-2 h-4 w-4" />
                 Rename
-            </DropdownMenuItem>
-
-            <DropdownMenuItem onClick={onColor}>
-                <Palette className="mr-2 h-4 w-4" />
-                Change Color
             </DropdownMenuItem>
 
             <DropdownMenuItem onClick={onArchive}>

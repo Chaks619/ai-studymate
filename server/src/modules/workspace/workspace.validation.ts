@@ -13,8 +13,6 @@ export const createWorkspaceSchema = z.object({
     .max(500)
     .optional(),
 
-  color: z.string().optional(),
-
   icon: z.string().optional(),
 });
 

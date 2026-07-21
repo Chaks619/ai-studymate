@@ -4,7 +4,6 @@ export interface WorkspaceResponse {
   id: string;
   name: string;
   description: string;
-  color: string;
   icon: string;
   lastOpenedAt: Date | null | undefined;
   isArchived: boolean;
@@ -19,7 +18,6 @@ export const toWorkspaceResponse = (
     id: workspace.id,
     name: workspace.name,
     description: workspace.description,
-    color: workspace.color,
     icon: workspace.icon,
     lastOpenedAt: workspace.lastOpenedAt,
     isArchived: workspace.isArchived,

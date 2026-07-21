@@ -6,10 +6,7 @@ import {
   type HydratedDocument,
 } from "mongoose";
 
-import {
-  WORKSPACE_COLOR,
-  WORKSPACE_ICON,
-} from "./workspace.constants.js";
+import { WORKSPACE_ICON } from "./workspace.constants.js";
 
 const workspaceSchema = new Schema(
   {
@@ -31,12 +28,6 @@ const workspaceSchema = new Schema(
       type: String,
       default: "",
       maxlength: 500,
-    },
-
-    color: {
-      type: String,
-      default: WORKSPACE_COLOR.BLUE,
-      enum: Object.values(WORKSPACE_COLOR),
     },
 
     icon: {
